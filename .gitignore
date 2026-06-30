@@ -95,3 +95,5 @@ lint/tmp/
 # Local Signing Config
 signing.properties
 signing.keystore
+
+.kotlin

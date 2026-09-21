@@ -49,7 +49,7 @@ val highApiProjects = arrayOf("editor-lsp")
 fun Project.configureAndroidAndKotlin() {
     extensions.findByType<CommonExtension>()?.apply {
         compileSdk { version = release(Versions.compileSdkVersion) }
-        buildToolsVersion = Versions.buildToolsVersion
+        // buildToolsVersion = Versions.buildToolsVersion
 
         defaultConfig.apply {
             minSdk = if (highApiProjects.contains(this@configureAndroidAndKotlin.name)) {

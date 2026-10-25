@@ -49,9 +49,13 @@ android {
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
+    compileOptions {
+        isCoreLibraryDesugaringEnabled = true
+    }
 }
 
 dependencies {
+    coreLibraryDesugaring(libs.desugar)
     api(libs.androidx.annotation)
     implementation(libs.androidx.collection)
     implementation(libs.kotlin.stdlib)

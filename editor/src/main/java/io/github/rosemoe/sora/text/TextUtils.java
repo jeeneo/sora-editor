@@ -24,6 +24,7 @@
 package io.github.rosemoe.sora.text;
 
 import android.icu.lang.UCharacter;
+import android.os.Build;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -209,6 +210,26 @@ public class TextUtils {
         return text.subSequence(0, size);
     }
 
+    /**
+     * Returns whether the given code point is a combining mark, i.e. has a non-zero
+     * combining class.
+     * <p>
+     * {@code android.icu} is only available from API 24, so on older platforms the general
+     * category is used as an approximation for the combining class.
+     */
+    private static boolean isCombiningMark(int codePoint) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            return UCharacter.getCombiningClass(codePoint) != 0;
+        }
+        switch (Character.getType(codePoint)) {
+            case Character.NON_SPACING_MARK:
+            case Character.ENCLOSING_MARK:
+            case Character.COMBINING_SPACING_MARK:
+                return true;
+            default:
+                return false;
+        }
+    }
 
     // From AOSP, BaseKeyListener.java
 
@@ -355,7 +376,7 @@ public class TextUtils {
                     }
 
                     if (!AndroidEmoji.isVariationSelector(codePoint) &&
-                            UCharacter.getCombiningClass(codePoint) == 0) {
+                            !isCombiningMark(codePoint)) {
                         deleteCharCount += Character.charCount(codePoint);
                     }
                     state = STATE_FINISHED;

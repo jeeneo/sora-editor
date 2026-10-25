@@ -48,11 +48,12 @@ android {
     compileOptions {
         // Flag to enable support for the new language APIs
         // It's only needed if your app targets old Android APIs.
-        //isCoreLibraryDesugaringEnabled = true
+        isCoreLibraryDesugaringEnabled = true
     }
 }
 
 dependencies {
+    coreLibraryDesugaring(libs.desugar)
     compileOnly(projects.editor)
     compileOnly(projects.onigurumaNative)
 

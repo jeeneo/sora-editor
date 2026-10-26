@@ -1731,13 +1731,20 @@ public class CodeEditor extends View implements ContentListener, Formatter.Forma
                 layout = newLayout;
                 return;
             }
-            layout.destroyLayout();
         }
         if (wordwrap) {
             renderer.setCachedLineNumberWidth((int) measureLineNumber());
-            layout = new WordwrapLayout(this, text, antiWordBreaking, wordwrapRtlDisplaySupport, null, false);
+            var newLayout = new WordwrapLayout(this, text, antiWordBreaking, wordwrapRtlDisplaySupport, null, false);
+            if (layout != null) {
+                layout.destroyLayout();
+            }
+            layout = newLayout;
         } else {
-            layout = new LineBreakLayout(this, text);
+            var newLayout = new LineBreakLayout(this, text);
+            if (layout != null) {
+                layout.destroyLayout();
+            }
+            layout = newLayout;
         }
         if (touchHandler != null) {
             touchHandler.scrollBy(0, 0);

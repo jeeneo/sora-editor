@@ -105,6 +105,15 @@ public class SyncRegistry implements IGrammarRepository, IThemeProvider {
 	}
 
 	/**
+	 * AI::
+	 * Forgets the compiled rules of {@code scopeName}, keeping its raw grammar. The next lookup
+	 * builds it again, so includes that were missing at the first compile can now be resolved.
+	 */
+	public void removeGrammar(final String scopeName) {
+		this._grammars.remove(scopeName);
+	}
+
+	/**
 	 * Lookup a grammar.
 	 */
 	@Nullable

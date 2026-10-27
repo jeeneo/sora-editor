@@ -67,7 +67,8 @@ import io.github.rosemoe.sora.widget.schemes.EditorColorScheme;
 
 public class TextMateAnalyzer extends AsyncIncrementalAnalyzeManager<MyState, Span> implements FoldingHelper, ThemeRegistry.ThemeChangeListener {
 
-    private final IGrammar grammar;
+    // AI::
+    private volatile IGrammar grammar;
     private Theme theme;
     private final TextMateLanguage language;
     private final LanguageConfiguration configuration;
@@ -134,6 +135,20 @@ public class TextMateAnalyzer extends AsyncIncrementalAnalyzeManager<MyState, Sp
         if (markers == null) return;
         foldingOffside = markers.offSide;
         cachedRegExp = Oniguruma.newRegex("(" + markers.markersStart + ")|(?:" + markers.markersEnd + ")");
+    }
+
+    /**
+     * AI::
+     * Replace the grammar this analyzer tokenizes with. The caller is responsible for running the
+     * analysis again afterwards, as the lines analyzed so far were tokenized with the old one.
+     */
+    public void updateGrammar(@NonNull IGrammar newGrammar) {
+        grammar = newGrammar;
+    }
+    
+    // AI::
+    public IGrammar getGrammar() {
+        return grammar;
     }
 
     @Override

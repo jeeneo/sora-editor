@@ -197,6 +197,15 @@ public final class Registry {
         return true;
     }
 
+    /**
+     * AI::
+     * Forgets the compiled rules of {@code scopeName}. Its raw grammar stays registered, so the
+     * next lookup compiles it again with the grammars that have been added since.
+     */
+    public void removeGrammar(final String scopeName) {
+        this._syncRegistry.removeGrammar(scopeName);
+    }
+
     public IGrammar addGrammar(final IGrammarSource source) throws TMException {
         return addGrammar(source, null, null, null);
     }

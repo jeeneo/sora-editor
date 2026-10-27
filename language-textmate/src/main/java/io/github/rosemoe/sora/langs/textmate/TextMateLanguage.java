@@ -66,6 +66,9 @@ public class TextMateLanguage extends EmptyLanguage {
 
     LanguageConfiguration languageConfiguration;
 
+    // AI::
+    private String scopeName;
+
     TextMateNewlineHandler[] newlineHandlers;
 
     TextMateSymbolPairMatch symbolPairMatch;
@@ -192,6 +195,8 @@ public class TextMateLanguage extends EmptyLanguage {
             Log.w(LOG_TAG, "Failed to create analyzer for TextMate", e);
         }
         this.languageConfiguration = languageConfiguration;
+        // AI::
+        this.scopeName = grammar.getScopeName();
         newlineHandler = new TextMateNewlineHandler(this);
         newlineHandlers = new TextMateNewlineHandler[]{newlineHandler};
         if (languageConfiguration != null) {
@@ -216,6 +221,27 @@ public class TextMateLanguage extends EmptyLanguage {
         }
         var languageConfiguration = grammarRegistry.findLanguageConfiguration(grammar.getScopeName());
         createAnalyzerAndNewlineHandler(grammar, languageConfiguration);
+    }
+
+    /**
+     * AI::
+     * Resolve the root grammar from the registry again and analyze the document once more, keeping
+     * the current styles on screen until the new ones are ready.
+     * <p>
+     * TextMate resolves a grammar's {@code include}s when it compiles it, so a grammar registered
+     * after the root grammar was built stays invisible to it. Call this after adding one.
+     *
+     * @return whether the grammar was resolved and the analysis restarted
+     */
+    public boolean reloadGrammar() {
+        var grammar = grammarRegistry.findGrammar(scopeName);
+        var analyzer = textMateAnalyzer;
+        if (grammar == null || analyzer == null) {
+            return false;
+        }
+        analyzer.updateGrammar(grammar);
+        analyzer.rerunKeepingStyles();
+        return true;
     }
 
     /**

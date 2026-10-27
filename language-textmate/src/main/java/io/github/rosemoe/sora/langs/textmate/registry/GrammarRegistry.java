@@ -249,6 +249,18 @@ public class GrammarRegistry {
         }
     }
 
+    /**
+     * AI::
+     * Forgets the compiled rules of {@code scopeName}, keeping the grammar registered.
+     *
+     * TextMate resolves a grammar's {@code include}s when it first compiles its rules, so a
+     * grammar that is registered afterwards is never picked up. Rebuilding the compiled rules
+     * makes them resolve again, at the cost of one recompile on the next tokenization.
+     */
+    public synchronized void reloadGrammar(final String scopeName) {
+        registry.removeGrammar(scopeName);
+    }
+
     public synchronized void setTheme(ThemeModel themeModel) throws Exception {
         if (!themeModel.isLoaded()) {
             themeModel.load(registry.getColorMap());

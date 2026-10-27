@@ -149,6 +149,23 @@ public abstract class AsyncIncrementalAnalyzeManager<S, T> extends BaseAnalyzeMa
 
     @Override
     public void rerun() {
+        restart(false);
+    }
+
+    /**
+     * AI::
+     * Run the analysis again from the first line, like {@link #rerun()}, but keep the styles that
+     * are currently on screen until the new ones are ready.
+     * <p>
+     * Use this when the content did not change and only the way it is analyzed did (for example,
+     * the tokenizer re-resolved the grammars it includes): dropping the styles first makes the
+     * whole document flash without any color while it is being tokenized again.
+     */
+    public void rerunKeepingStyles() {
+        restart(true);
+    }
+
+    private void restart(boolean keepStyles) {
         if (thread != null) {
             if (thread.isAlive()) {
                 thread.interrupt();
@@ -164,7 +181,10 @@ public abstract class AsyncIncrementalAnalyzeManager<S, T> extends BaseAnalyzeMa
             thread.setName("AsyncAnalyzer-" + nextThreadId());
             thread.offerMessage(MSG_INIT, text);
             increaseRunCount();
-            sendNewStyles(null);
+            // AI::
+            if (!keepStyles) {
+                sendNewStyles(null);
+            }
             thread.start();
         }
     }

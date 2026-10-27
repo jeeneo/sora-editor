@@ -18,7 +18,6 @@ package org.eclipse.tm4e.core.internal.rule;
 
 import java.util.ArrayList;
 import java.util.Objects;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.Nullable;
@@ -116,8 +115,7 @@ final class RegExpSource {
 			try {
 				final int index = Integer.parseInt(match.group(1));
 				if (index < captureIndices.length) {
-					final var replacement = RegexSource.escapeRegExpCharacters(capturedValues.get(index));
-					return Matcher.quoteReplacement(replacement); // see https://stackoverflow.com/a/70785772/5116073
+					return RegexSource.escapeRegExpCharacters(capturedValues.get(index));
 				}
 			} catch (final NumberFormatException ex) {
 				// ignore

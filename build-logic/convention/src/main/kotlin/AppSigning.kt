@@ -39,14 +39,26 @@ object AppSigning {
         val keyPassword: String
     )
 
-    fun getAppSigningConfigOptional(project: Project): Result<AppSigningConfig> = runCatching {
-        getAppSigningConfig(project)
-    }.onFailure {
-        val message = when (it) {
-            is MissingEnvVarException -> "App signing config not correctly configured"
-            else -> "Error when generating app signing config"
+    fun getAppSigningConfigOptional(project: Project): Result<AppSigningConfig> {
+        val properties = loadProperties(project)
+        val required = listOf(
+            "SIGNING_STORE_BIN", "SIGNING_STORE_PASSWORD",
+            "SIGNING_KEY_ALIAS", "SIGNING_KEY_PASSWORD"
+        )
+        val missing = required.filter { 
+            System.getenv(it).isNullOrBlank() && (properties[it] as? String).isNullOrBlank() 
         }
-        project.logger.error(message, it)
+        if (missing.isNotEmpty()) {
+            project.logger.warn("App signing not configured, missing: ${missing.joinToString()}")
+            return Result.failure(MissingEnvVarException("Missing: ${missing.joinToString()}"))
+        }
+        return runCatching { getAppSigningConfig(project) }
+            .onFailure { project.logger.error("Error when generating app signing config", it) }
+    }
+
+    private fun loadProperties(project: Project) = Properties().also {
+        val file = project.rootProject.file("signing.properties")
+        if (file.exists()) file.reader().use { rd -> it.load(rd) }
     }
 
     fun getAppSigningConfig(project: Project): AppSigningConfig {

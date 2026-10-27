@@ -243,9 +243,12 @@ public class TextMateAnalyzer extends AsyncIncrementalAnalyzeManager<MyState, Sp
 
             int backgroundColorId = theme.getDefaults().backgroundId == background ? 0 : background + 255;
             boolean needUnderline = (fontStyle & FontStyle.Underline) != 0;
+            boolean bold = (fontStyle & FontStyle.Bold) != 0;
+            boolean italic = (fontStyle & FontStyle.Italic) != 0;
+            boolean strikeThrough = (fontStyle & FontStyle.Strikethrough) != 0;
             Span span = needUnderline
-                    ? SpanFactory.obtain(startIndex, TextStyle.makeStyle(foreground + 255, backgroundColorId, (fontStyle & FontStyle.Bold) != 0, (fontStyle & FontStyle.Italic) != 0, false))
-                    : SpanFactory.obtainNoExt(startIndex, TextStyle.makeStyle(foreground + 255, backgroundColorId, (fontStyle & FontStyle.Bold) != 0, (fontStyle & FontStyle.Italic) != 0, false));
+                    ? SpanFactory.obtain(startIndex, TextStyle.makeStyle(foreground + 255, backgroundColorId, bold, italic, strikeThrough))
+                    : SpanFactory.obtainNoExt(startIndex, TextStyle.makeStyle(foreground + 255, backgroundColorId, bold, italic, strikeThrough));
 
             span.setExtra(tokenType);
 

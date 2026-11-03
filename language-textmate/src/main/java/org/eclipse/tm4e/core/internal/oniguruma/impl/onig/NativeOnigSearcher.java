@@ -29,7 +29,7 @@ class NativeOnigSearcher {
 
     public NativeOnigSearcher(final List<String> regExps) {
         this.regExps = regExps.stream().map(NativeOnigSearcher::createRegExp).collect(Collectors.toList());
-        this.pointers = this.regExps.stream().mapToLong(NativeOnigRegExp::getNativePtr).toArray();
+        this.pointers = new long[this.regExps.size()];
     }
 
     private static NativeOnigRegExp createRegExp(String exp) {
@@ -47,12 +47,20 @@ class NativeOnigSearcher {
         }
     }
 
+    private long[] collectPointers() {
+        final long[] pointers = this.pointers;
+        for (int i = 0; i < pointers.length; i++) {
+            pointers[i] = regExps.get(i).getNativePtr();
+        }
+        return pointers;
+    }
+
     @Nullable
-    public NativeOnigResult search(final OnigString source, final int charOffset) {
+    public synchronized NativeOnigResult search(final OnigString source, final int charOffset) {
         final int byteOffset = source.getByteIndexOfChar(charOffset);
 
         if (NativeOnigConfig.isSearchInBatch()) {
-            var result = OnigNative.regexSearchBatch(pointers, source.getCacheKey(), source.getUtf8Bytes(), byteOffset, source.bytesCount);
+            var result = OnigNative.regexSearchBatch(collectPointers(), source.getCacheKey(), source.getUtf8Bytes(), byteOffset, source.bytesCount);
             return result == null ? null : new NativeOnigResult(result, true);
         }
 
